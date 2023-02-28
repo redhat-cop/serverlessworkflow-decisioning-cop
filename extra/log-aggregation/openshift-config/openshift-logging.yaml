@@ -1,0 +1,3653 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      alm-examples: |-
+        [
+          {
+            "apiVersion": "logging.openshift.io/v1",
+            "kind": "ClusterLogForwarder",
+            "metadata": {
+              "name": "instance",
+              "namespace": "openshift-logging"
+            },
+            "spec": {
+              "outputs": [
+                {
+                  "name": "remote-elasticsearch",
+                  "secret": {
+                    "name": "elasticsearch"
+                  },
+                  "type": "elasticsearch",
+                  "url": "remote.example.org:9200"
+                }
+              ],
+              "pipelines": [
+                {
+                  "inputRefs": [
+                    "application",
+                    "audit",
+                    "infrastructure"
+                  ],
+                  "name": "enable-default-log-store",
+                  "outputRefs": [
+                    "default"
+                  ]
+                },
+                {
+                  "inputRefs": [
+                    "application"
+                  ],
+                  "name": "forward-to-remote",
+                  "outputRefs": [
+                    "remote-elasticsearch"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "apiVersion": "logging.openshift.io/v1",
+            "kind": "ClusterLogging",
+            "metadata": {
+              "name": "instance",
+              "namespace": "openshift-logging"
+            },
+            "spec": {
+              "collection": {
+                "type": "fluentd"
+              },
+              "logStore": {
+                "elasticsearch": {
+                  "nodeCount": 3,
+                  "redundancyPolicy": "SingleRedundancy",
+                  "resources": {
+                    "requests": {
+                      "memory": "2Gi"
+                    }
+                  },
+                  "storage": {
+                    "size": "200G",
+                    "storageClassName": "gp2"
+                  }
+                },
+                "retentionPolicy": {
+                  "application": {
+                    "maxAge": "7d"
+                  }
+                },
+                "type": "elasticsearch"
+              },
+              "managementState": "Managed",
+              "visualization": {
+                "kibana": {
+                  "replicas": 1
+                },
+                "type": "kibana"
+              }
+            }
+          }
+        ]
+      capabilities: Seamless Upgrades
+      categories: OpenShift Optional, Logging & Tracing
+      certified: "false"
+      console.openshift.io/plugins: '["logging-view-plugin"]'
+      containerImage: registry.redhat.io/openshift-logging/cluster-logging-rhel8-operator@sha256:1b73b8235925fc895168b52a77ebcf10e0133fd69871213d2c0fc17a4684305a
+      createdAt: "2018-08-01T08:00:00Z"
+      description: The Red Hat OpenShift Logging Operator for OCP provides a means
+        for configuring and managing your aggregated logging stack.
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.135"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.135"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      kubectl.kubernetes.io/default-container: cluster-logging-operator
+      olm.operatorGroup: openshift-logging-lqnvj
+      olm.operatorNamespace: openshift-logging
+      olm.skipRange: '>=4.6.0-0 <5.6.2'
+      olm.targetNamespaces: openshift-logging
+      openshift.io/scc: anyuid
+      operatorframework.io/cluster-monitoring: "true"
+      operatorframework.io/properties: '{"properties":[{"type":"olm.gvk","value":{"group":"logging.openshift.io","kind":"ClusterLogForwarder","version":"v1"}},{"type":"olm.gvk","value":{"group":"logging.openshift.io","kind":"ClusterLogging","version":"v1"}},{"type":"olm.maxOpenShiftVersion","value":4.14},{"type":"olm.package","value":{"packageName":"cluster-logging","version":"5.6.2"}}]}'
+      operatorframework.io/suggested-namespace: openshift-logging
+      operators.openshift.io/infrastructure-features: '["disconnected","proxy-aware"]'
+      operators.openshift.io/valid-subscription: '["OpenShift Kubernetes Engine",
+        "OpenShift Container Platform", "OpenShift Platform Plus"]'
+      operators.operatorframework.io/builder: operator-sdk-unknown
+      operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+      support: AOS Logging (team-logging@redhat.com)
+    creationTimestamp: "2023-02-16T17:33:07Z"
+    generateName: cluster-logging-operator-7db5c79ccf-
+    labels:
+      name: cluster-logging-operator
+      pod-template-hash: 7db5c79ccf
+    name: cluster-logging-operator-7db5c79ccf-khxvl
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: cluster-logging-operator-7db5c79ccf
+      uid: 47d94073-c19f-45e9-a071-3d739c32953a
+    resourceVersion: "17881214"
+    uid: b1c9ff4a-7bea-4e0f-afef-04411100a89f
+  spec:
+    containers:
+    - command:
+      - cluster-logging-operator
+      env:
+      - name: WATCH_NAMESPACE
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.annotations['olm.targetNamespaces']
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: OPERATOR_NAME
+        value: cluster-logging-operator
+      - name: RELATED_IMAGE_VECTOR
+        value: registry.redhat.io/openshift-logging/vector-rhel8@sha256:3d641bd3844c3c350681cea24ddcda58568e647db2044403dfbe22fb9f6c3d52
+      - name: RELATED_IMAGE_FLUENTD
+        value: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      - name: RELATED_IMAGE_LOG_FILE_METRIC_EXPORTER
+        value: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      - name: RELATED_IMAGE_LOGGING_CONSOLE_PLUGIN
+        value: registry.redhat.io/openshift-logging/logging-view-plugin-rhel8@sha256:ea208727faa0e1b975ce1026aeb7fd0c6b6d1b6422af7098ecf03e2430c020ad
+      - name: OPERATOR_CONDITION_NAME
+        value: cluster-logging.v5.6.2
+      image: registry.redhat.io/openshift-logging/cluster-logging-rhel8-operator@sha256:1b73b8235925fc895168b52a77ebcf10e0133fd69871213d2c0fc17a4684305a
+      imagePullPolicy: IfNotPresent
+      name: cluster-logging-operator
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+          - MKNOD
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-smvnh
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: cluster-logging-operator-dockercfg-j8l4t
+    nodeName: ip-10-0-171-215.eu-west-2.compute.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 0
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      runAsNonRoot: true
+      seLinuxOptions:
+        level: s0:c26,c10
+    serviceAccount: cluster-logging-operator
+    serviceAccountName: cluster-logging-operator
+    terminationGracePeriodSeconds: 30
+    tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+    volumes:
+    - name: kube-api-access-smvnh
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-16T17:33:07Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T03:16:49Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T03:16:49Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-16T17:33:07Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://8b1f96e78e8a8ed6697d3d22aac33c9eda19c5c832624ccdf000d1e850e06832
+      image: registry.redhat.io/openshift-logging/cluster-logging-rhel8-operator@sha256:1b73b8235925fc895168b52a77ebcf10e0133fd69871213d2c0fc17a4684305a
+      imageID: registry.redhat.io/openshift-logging/cluster-logging-rhel8-operator@sha256:022b3a03221c91d3d03ef2102eea0cf0bb1fec3dbcfbec3b676a532305184ad6
+      lastState:
+        terminated:
+          containerID: cri-o://7cbb3f0a5f2d5c4958b49ed3b5a05a38aced1aa783a761bc11260c8876e932f2
+          exitCode: 2
+          finishedAt: "2023-02-21T03:16:47Z"
+          reason: Error
+          startedAt: "2023-02-21T00:21:03Z"
+      name: cluster-logging-operator
+      ready: true
+      restartCount: 15
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T03:16:48Z"
+    hostIP: 10.0.171.215
+    phase: Running
+    podIP: 10.131.0.135
+    podIPs:
+    - ip: 10.131.0.135
+    qosClass: BestEffort
+    startTime: "2023-02-16T17:33:07Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      container.seccomp.security.alpha.kubernetes.io/collector: runtime/default
+      container.seccomp.security.alpha.kubernetes.io/logfilesmetricexporter: runtime/default
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.130.0.242"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.130.0.242"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: log-collector-scc
+      scheduler.alpha.kubernetes.io/critical-pod: ""
+      seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    creationTimestamp: "2023-02-21T13:14:05Z"
+    generateName: collector-
+    labels:
+      component: collector
+      controller-revision-hash: 86f64478f4
+      logging-infra: collector
+      pod-template-generation: "28"
+      provider: openshift
+    name: collector-2xhp9
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: collector
+      uid: 66abcd38-21fc-44eb-9556-691f08deb21d
+    resourceVersion: "18305782"
+    uid: 5d6a1309-bd2d-4120-b688-2e912b0580e1
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-166-12.eu-west-2.compute.internal
+    containers:
+    - env:
+      - name: COLLECTOR_CONF_HASH
+        value: ef94a9bdec78ba66b7e56fce8140f8fb
+      - name: TRUSTED_CA_HASH
+        value: 2ebb7ccd7aa7bead6579844ec442d938
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: NODE_IPV4
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      - name: OPENSHIFT_CLUSTER_ID
+        value: c5c849fb-3fcc-47ca-8d3c-acd4dab1ea3a
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIP
+      - name: POD_IPS
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIPs
+      - name: NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR
+        value: "0.9"
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imagePullPolicy: IfNotPresent
+      name: collector
+      ports:
+      - containerPort: 24231
+        name: metrics
+        protocol: TCP
+      resources:
+        limits:
+          memory: 736Mi
+        requests:
+          cpu: 100m
+          memory: 736Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /var/log/journal
+        name: varlogjournal
+        readOnly: true
+      - mountPath: /var/log/audit
+        name: varlogaudit
+        readOnly: true
+      - mountPath: /var/log/ovn
+        name: varlogovn
+        readOnly: true
+      - mountPath: /var/log/oauth-apiserver
+        name: varlogoauthapiserver
+        readOnly: true
+      - mountPath: /var/log/openshift-apiserver
+        name: varlogopenshiftapiserver
+        readOnly: true
+      - mountPath: /var/log/kube-apiserver
+        name: varlogkubeapiserver
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /tmp
+        name: tmp
+      - mountPath: /etc/pki/ca-trust/extracted/pem/
+        name: collector-trusted-ca-bundle
+        readOnly: true
+      - mountPath: /etc/fluent/keys
+        name: certs
+        readOnly: true
+      - mountPath: /etc/fluent/configs.d/user
+        name: config
+        readOnly: true
+      - mountPath: /var/lib/fluentd
+        name: datadir
+      - mountPath: /opt/app-root/src/run.sh
+        name: entrypoint
+        readOnly: true
+        subPath: run.sh
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-mtkfj
+        readOnly: true
+    - args:
+      - -c
+      - /usr/local/bin/log-file-metric-exporter -verbosity=2 -dir=/var/log/pods -http=:2112
+        -keyFile=/etc/collector/metrics/tls.key -crtFile=/etc/collector/metrics/tls.crt
+      command:
+      - /bin/bash
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imagePullPolicy: IfNotPresent
+      name: logfilesmetricexporter
+      ports:
+      - containerPort: 2112
+        name: logfile-metrics
+        protocol: TCP
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-mtkfj
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: logcollector-dockercfg-wc2bh
+    nodeName: ip-10-0-166-12.eu-west-2.compute.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    serviceAccount: logcollector
+    serviceAccountName: logcollector
+    terminationGracePeriodSeconds: 10
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - hostPath:
+        path: /var/log/containers
+        type: ""
+      name: varlogcontainers
+    - hostPath:
+        path: /var/log/pods
+        type: ""
+      name: varlogpods
+    - hostPath:
+        path: /var/log/journal
+        type: ""
+      name: varlogjournal
+    - hostPath:
+        path: /var/log/audit
+        type: ""
+      name: varlogaudit
+    - hostPath:
+        path: /var/log/ovn
+        type: ""
+      name: varlogovn
+    - hostPath:
+        path: /var/log/oauth-apiserver
+        type: ""
+      name: varlogoauthapiserver
+    - hostPath:
+        path: /var/log/openshift-apiserver
+        type: ""
+      name: varlogopenshiftapiserver
+    - hostPath:
+        path: /var/log/kube-apiserver
+        type: ""
+      name: varlogkubeapiserver
+    - name: collector-metrics
+      secret:
+        defaultMode: 420
+        secretName: collector-metrics
+    - emptyDir:
+        medium: Memory
+      name: tmp
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: ca-bundle.crt
+          path: tls-ca-bundle.pem
+        name: collector-trusted-ca-bundle
+      name: collector-trusted-ca-bundle
+    - name: certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: collector
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: config
+    - hostPath:
+        path: /var/lib/fluentd
+        type: ""
+      name: datadir
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: entrypoint
+    - name: kube-api-access-mtkfj
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:05Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:08Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:08Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:05Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://3f80f95a4a92cc109f72198c7b090c7b67db11d4b640269cc2edafb26c1866cd
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imageID: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:0513a12e2db2257d56ea9e1e4edd8817b2a7730958ac8d5a8dda0e352698388f
+      lastState: {}
+      name: collector
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:07Z"
+    - containerID: cri-o://285475591eb8a2ce67e459f3f070bcbe07d9ab6877e0a36a67eec76db44b3f50
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imageID: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:0d2023c2503af25670e26c9e17cf4cf30bcdde49e6c671d7a8c44a50a6075a11
+      lastState: {}
+      name: logfilesmetricexporter
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:07Z"
+    hostIP: 10.0.166.12
+    phase: Running
+    podIP: 10.130.0.242
+    podIPs:
+    - ip: 10.130.0.242
+    qosClass: Burstable
+    startTime: "2023-02-21T13:14:05Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      container.seccomp.security.alpha.kubernetes.io/collector: runtime/default
+      container.seccomp.security.alpha.kubernetes.io/logfilesmetricexporter: runtime/default
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.129.1.162"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.129.1.162"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: log-collector-scc
+      scheduler.alpha.kubernetes.io/critical-pod: ""
+      seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    creationTimestamp: "2023-02-21T13:14:06Z"
+    generateName: collector-
+    labels:
+      component: collector
+      controller-revision-hash: 86f64478f4
+      logging-infra: collector
+      pod-template-generation: "28"
+      provider: openshift
+    name: collector-46pm7
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: collector
+      uid: 66abcd38-21fc-44eb-9556-691f08deb21d
+    resourceVersion: "18305819"
+    uid: 1ab04272-99dd-4591-9839-38de5bc96e98
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-212-231.eu-west-2.compute.internal
+    containers:
+    - env:
+      - name: COLLECTOR_CONF_HASH
+        value: ef94a9bdec78ba66b7e56fce8140f8fb
+      - name: TRUSTED_CA_HASH
+        value: 2ebb7ccd7aa7bead6579844ec442d938
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: NODE_IPV4
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      - name: OPENSHIFT_CLUSTER_ID
+        value: c5c849fb-3fcc-47ca-8d3c-acd4dab1ea3a
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIP
+      - name: POD_IPS
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIPs
+      - name: NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR
+        value: "0.9"
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imagePullPolicy: IfNotPresent
+      name: collector
+      ports:
+      - containerPort: 24231
+        name: metrics
+        protocol: TCP
+      resources:
+        limits:
+          memory: 736Mi
+        requests:
+          cpu: 100m
+          memory: 736Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /var/log/journal
+        name: varlogjournal
+        readOnly: true
+      - mountPath: /var/log/audit
+        name: varlogaudit
+        readOnly: true
+      - mountPath: /var/log/ovn
+        name: varlogovn
+        readOnly: true
+      - mountPath: /var/log/oauth-apiserver
+        name: varlogoauthapiserver
+        readOnly: true
+      - mountPath: /var/log/openshift-apiserver
+        name: varlogopenshiftapiserver
+        readOnly: true
+      - mountPath: /var/log/kube-apiserver
+        name: varlogkubeapiserver
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /tmp
+        name: tmp
+      - mountPath: /etc/pki/ca-trust/extracted/pem/
+        name: collector-trusted-ca-bundle
+        readOnly: true
+      - mountPath: /etc/fluent/keys
+        name: certs
+        readOnly: true
+      - mountPath: /etc/fluent/configs.d/user
+        name: config
+        readOnly: true
+      - mountPath: /var/lib/fluentd
+        name: datadir
+      - mountPath: /opt/app-root/src/run.sh
+        name: entrypoint
+        readOnly: true
+        subPath: run.sh
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-wp8g9
+        readOnly: true
+    - args:
+      - -c
+      - /usr/local/bin/log-file-metric-exporter -verbosity=2 -dir=/var/log/pods -http=:2112
+        -keyFile=/etc/collector/metrics/tls.key -crtFile=/etc/collector/metrics/tls.crt
+      command:
+      - /bin/bash
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imagePullPolicy: IfNotPresent
+      name: logfilesmetricexporter
+      ports:
+      - containerPort: 2112
+        name: logfile-metrics
+        protocol: TCP
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-wp8g9
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: logcollector-dockercfg-wc2bh
+    nodeName: ip-10-0-212-231.eu-west-2.compute.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    serviceAccount: logcollector
+    serviceAccountName: logcollector
+    terminationGracePeriodSeconds: 10
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - hostPath:
+        path: /var/log/containers
+        type: ""
+      name: varlogcontainers
+    - hostPath:
+        path: /var/log/pods
+        type: ""
+      name: varlogpods
+    - hostPath:
+        path: /var/log/journal
+        type: ""
+      name: varlogjournal
+    - hostPath:
+        path: /var/log/audit
+        type: ""
+      name: varlogaudit
+    - hostPath:
+        path: /var/log/ovn
+        type: ""
+      name: varlogovn
+    - hostPath:
+        path: /var/log/oauth-apiserver
+        type: ""
+      name: varlogoauthapiserver
+    - hostPath:
+        path: /var/log/openshift-apiserver
+        type: ""
+      name: varlogopenshiftapiserver
+    - hostPath:
+        path: /var/log/kube-apiserver
+        type: ""
+      name: varlogkubeapiserver
+    - name: collector-metrics
+      secret:
+        defaultMode: 420
+        secretName: collector-metrics
+    - emptyDir:
+        medium: Memory
+      name: tmp
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: ca-bundle.crt
+          path: tls-ca-bundle.pem
+        name: collector-trusted-ca-bundle
+      name: collector-trusted-ca-bundle
+    - name: certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: collector
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: config
+    - hostPath:
+        path: /var/lib/fluentd
+        type: ""
+      name: datadir
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: entrypoint
+    - name: kube-api-access-wp8g9
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:06Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:09Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:09Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:06Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://35f142104e315c31ba9b6824a06a7d65c1c1c19c4e955f1e632ce9eb5d6e1e04
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imageID: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:0513a12e2db2257d56ea9e1e4edd8817b2a7730958ac8d5a8dda0e352698388f
+      lastState: {}
+      name: collector
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:08Z"
+    - containerID: cri-o://294ea97839c9d6eb3d38ead038f54a23caf176aee24d90f5b7bc622ac8b5eb09
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imageID: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:0d2023c2503af25670e26c9e17cf4cf30bcdde49e6c671d7a8c44a50a6075a11
+      lastState: {}
+      name: logfilesmetricexporter
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:08Z"
+    hostIP: 10.0.212.231
+    phase: Running
+    podIP: 10.129.1.162
+    podIPs:
+    - ip: 10.129.1.162
+    qosClass: Burstable
+    startTime: "2023-02-21T13:14:06Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      container.seccomp.security.alpha.kubernetes.io/collector: runtime/default
+      container.seccomp.security.alpha.kubernetes.io/logfilesmetricexporter: runtime/default
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.78"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.2.78"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: log-collector-scc
+      scheduler.alpha.kubernetes.io/critical-pod: ""
+      seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    creationTimestamp: "2023-02-21T13:14:05Z"
+    generateName: collector-
+    labels:
+      component: collector
+      controller-revision-hash: 86f64478f4
+      logging-infra: collector
+      pod-template-generation: "28"
+      provider: openshift
+    name: collector-6v8nj
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: collector
+      uid: 66abcd38-21fc-44eb-9556-691f08deb21d
+    resourceVersion: "18305775"
+    uid: 813c7858-5e68-4ec5-8273-0921d844ede6
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-223-37.eu-west-2.compute.internal
+    containers:
+    - env:
+      - name: COLLECTOR_CONF_HASH
+        value: ef94a9bdec78ba66b7e56fce8140f8fb
+      - name: TRUSTED_CA_HASH
+        value: 2ebb7ccd7aa7bead6579844ec442d938
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: NODE_IPV4
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      - name: OPENSHIFT_CLUSTER_ID
+        value: c5c849fb-3fcc-47ca-8d3c-acd4dab1ea3a
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIP
+      - name: POD_IPS
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIPs
+      - name: NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR
+        value: "0.9"
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imagePullPolicy: IfNotPresent
+      name: collector
+      ports:
+      - containerPort: 24231
+        name: metrics
+        protocol: TCP
+      resources:
+        limits:
+          memory: 736Mi
+        requests:
+          cpu: 100m
+          memory: 736Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /var/log/journal
+        name: varlogjournal
+        readOnly: true
+      - mountPath: /var/log/audit
+        name: varlogaudit
+        readOnly: true
+      - mountPath: /var/log/ovn
+        name: varlogovn
+        readOnly: true
+      - mountPath: /var/log/oauth-apiserver
+        name: varlogoauthapiserver
+        readOnly: true
+      - mountPath: /var/log/openshift-apiserver
+        name: varlogopenshiftapiserver
+        readOnly: true
+      - mountPath: /var/log/kube-apiserver
+        name: varlogkubeapiserver
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /tmp
+        name: tmp
+      - mountPath: /etc/pki/ca-trust/extracted/pem/
+        name: collector-trusted-ca-bundle
+        readOnly: true
+      - mountPath: /etc/fluent/keys
+        name: certs
+        readOnly: true
+      - mountPath: /etc/fluent/configs.d/user
+        name: config
+        readOnly: true
+      - mountPath: /var/lib/fluentd
+        name: datadir
+      - mountPath: /opt/app-root/src/run.sh
+        name: entrypoint
+        readOnly: true
+        subPath: run.sh
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-577nf
+        readOnly: true
+    - args:
+      - -c
+      - /usr/local/bin/log-file-metric-exporter -verbosity=2 -dir=/var/log/pods -http=:2112
+        -keyFile=/etc/collector/metrics/tls.key -crtFile=/etc/collector/metrics/tls.crt
+      command:
+      - /bin/bash
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imagePullPolicy: IfNotPresent
+      name: logfilesmetricexporter
+      ports:
+      - containerPort: 2112
+        name: logfile-metrics
+        protocol: TCP
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-577nf
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: logcollector-dockercfg-wc2bh
+    nodeName: ip-10-0-223-37.eu-west-2.compute.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    serviceAccount: logcollector
+    serviceAccountName: logcollector
+    terminationGracePeriodSeconds: 10
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - hostPath:
+        path: /var/log/containers
+        type: ""
+      name: varlogcontainers
+    - hostPath:
+        path: /var/log/pods
+        type: ""
+      name: varlogpods
+    - hostPath:
+        path: /var/log/journal
+        type: ""
+      name: varlogjournal
+    - hostPath:
+        path: /var/log/audit
+        type: ""
+      name: varlogaudit
+    - hostPath:
+        path: /var/log/ovn
+        type: ""
+      name: varlogovn
+    - hostPath:
+        path: /var/log/oauth-apiserver
+        type: ""
+      name: varlogoauthapiserver
+    - hostPath:
+        path: /var/log/openshift-apiserver
+        type: ""
+      name: varlogopenshiftapiserver
+    - hostPath:
+        path: /var/log/kube-apiserver
+        type: ""
+      name: varlogkubeapiserver
+    - name: collector-metrics
+      secret:
+        defaultMode: 420
+        secretName: collector-metrics
+    - emptyDir:
+        medium: Memory
+      name: tmp
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: ca-bundle.crt
+          path: tls-ca-bundle.pem
+        name: collector-trusted-ca-bundle
+      name: collector-trusted-ca-bundle
+    - name: certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: collector
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: config
+    - hostPath:
+        path: /var/lib/fluentd
+        type: ""
+      name: datadir
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: entrypoint
+    - name: kube-api-access-577nf
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:05Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:08Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:08Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:05Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://eed432a882464200b05c508fc90d422a63117178250d3ae3e9289a49974b4035
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imageID: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:0513a12e2db2257d56ea9e1e4edd8817b2a7730958ac8d5a8dda0e352698388f
+      lastState: {}
+      name: collector
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:07Z"
+    - containerID: cri-o://e9ef144783606ffd9c5ef594c45b5651b8ca94cda11cf78565cfff9a71053c19
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imageID: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:0d2023c2503af25670e26c9e17cf4cf30bcdde49e6c671d7a8c44a50a6075a11
+      lastState: {}
+      name: logfilesmetricexporter
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:07Z"
+    hostIP: 10.0.223.37
+    phase: Running
+    podIP: 10.128.2.78
+    podIPs:
+    - ip: 10.128.2.78
+    qosClass: Burstable
+    startTime: "2023-02-21T13:14:05Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      container.seccomp.security.alpha.kubernetes.io/collector: runtime/default
+      container.seccomp.security.alpha.kubernetes.io/logfilesmetricexporter: runtime/default
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.160"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.131.0.160"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: log-collector-scc
+      scheduler.alpha.kubernetes.io/critical-pod: ""
+      seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    creationTimestamp: "2023-02-21T13:14:05Z"
+    generateName: collector-
+    labels:
+      component: collector
+      controller-revision-hash: 86f64478f4
+      logging-infra: collector
+      pod-template-generation: "28"
+      provider: openshift
+    name: collector-gh4m8
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: collector
+      uid: 66abcd38-21fc-44eb-9556-691f08deb21d
+    resourceVersion: "18305803"
+    uid: b0717069-3bc4-4ab2-9ca0-b41ad196ab08
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-171-215.eu-west-2.compute.internal
+    containers:
+    - env:
+      - name: COLLECTOR_CONF_HASH
+        value: ef94a9bdec78ba66b7e56fce8140f8fb
+      - name: TRUSTED_CA_HASH
+        value: 2ebb7ccd7aa7bead6579844ec442d938
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: NODE_IPV4
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      - name: OPENSHIFT_CLUSTER_ID
+        value: c5c849fb-3fcc-47ca-8d3c-acd4dab1ea3a
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIP
+      - name: POD_IPS
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIPs
+      - name: NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR
+        value: "0.9"
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imagePullPolicy: IfNotPresent
+      name: collector
+      ports:
+      - containerPort: 24231
+        name: metrics
+        protocol: TCP
+      resources:
+        limits:
+          memory: 736Mi
+        requests:
+          cpu: 100m
+          memory: 736Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /var/log/journal
+        name: varlogjournal
+        readOnly: true
+      - mountPath: /var/log/audit
+        name: varlogaudit
+        readOnly: true
+      - mountPath: /var/log/ovn
+        name: varlogovn
+        readOnly: true
+      - mountPath: /var/log/oauth-apiserver
+        name: varlogoauthapiserver
+        readOnly: true
+      - mountPath: /var/log/openshift-apiserver
+        name: varlogopenshiftapiserver
+        readOnly: true
+      - mountPath: /var/log/kube-apiserver
+        name: varlogkubeapiserver
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /tmp
+        name: tmp
+      - mountPath: /etc/pki/ca-trust/extracted/pem/
+        name: collector-trusted-ca-bundle
+        readOnly: true
+      - mountPath: /etc/fluent/keys
+        name: certs
+        readOnly: true
+      - mountPath: /etc/fluent/configs.d/user
+        name: config
+        readOnly: true
+      - mountPath: /var/lib/fluentd
+        name: datadir
+      - mountPath: /opt/app-root/src/run.sh
+        name: entrypoint
+        readOnly: true
+        subPath: run.sh
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-chvqg
+        readOnly: true
+    - args:
+      - -c
+      - /usr/local/bin/log-file-metric-exporter -verbosity=2 -dir=/var/log/pods -http=:2112
+        -keyFile=/etc/collector/metrics/tls.key -crtFile=/etc/collector/metrics/tls.crt
+      command:
+      - /bin/bash
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imagePullPolicy: IfNotPresent
+      name: logfilesmetricexporter
+      ports:
+      - containerPort: 2112
+        name: logfile-metrics
+        protocol: TCP
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-chvqg
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: logcollector-dockercfg-wc2bh
+    nodeName: ip-10-0-171-215.eu-west-2.compute.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    serviceAccount: logcollector
+    serviceAccountName: logcollector
+    terminationGracePeriodSeconds: 10
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - hostPath:
+        path: /var/log/containers
+        type: ""
+      name: varlogcontainers
+    - hostPath:
+        path: /var/log/pods
+        type: ""
+      name: varlogpods
+    - hostPath:
+        path: /var/log/journal
+        type: ""
+      name: varlogjournal
+    - hostPath:
+        path: /var/log/audit
+        type: ""
+      name: varlogaudit
+    - hostPath:
+        path: /var/log/ovn
+        type: ""
+      name: varlogovn
+    - hostPath:
+        path: /var/log/oauth-apiserver
+        type: ""
+      name: varlogoauthapiserver
+    - hostPath:
+        path: /var/log/openshift-apiserver
+        type: ""
+      name: varlogopenshiftapiserver
+    - hostPath:
+        path: /var/log/kube-apiserver
+        type: ""
+      name: varlogkubeapiserver
+    - name: collector-metrics
+      secret:
+        defaultMode: 420
+        secretName: collector-metrics
+    - emptyDir:
+        medium: Memory
+      name: tmp
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: ca-bundle.crt
+          path: tls-ca-bundle.pem
+        name: collector-trusted-ca-bundle
+      name: collector-trusted-ca-bundle
+    - name: certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: collector
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: config
+    - hostPath:
+        path: /var/lib/fluentd
+        type: ""
+      name: datadir
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: entrypoint
+    - name: kube-api-access-chvqg
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:05Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:08Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:08Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:05Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://e4bce4147adb6b3efbbcf07eae6402aff469a2824a495042ee2b1f88e43d6379
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imageID: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:0513a12e2db2257d56ea9e1e4edd8817b2a7730958ac8d5a8dda0e352698388f
+      lastState: {}
+      name: collector
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:07Z"
+    - containerID: cri-o://8e6e39046efc1f388a1e960b25878cdce2217272ebc1f971c3a727264ae22067
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imageID: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:0d2023c2503af25670e26c9e17cf4cf30bcdde49e6c671d7a8c44a50a6075a11
+      lastState: {}
+      name: logfilesmetricexporter
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:07Z"
+    hostIP: 10.0.171.215
+    phase: Running
+    podIP: 10.131.0.160
+    podIPs:
+    - ip: 10.131.0.160
+    qosClass: Burstable
+    startTime: "2023-02-21T13:14:05Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      container.seccomp.security.alpha.kubernetes.io/collector: runtime/default
+      container.seccomp.security.alpha.kubernetes.io/logfilesmetricexporter: runtime/default
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.129.2.59"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.129.2.59"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: log-collector-scc
+      scheduler.alpha.kubernetes.io/critical-pod: ""
+      seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    creationTimestamp: "2023-02-21T13:14:06Z"
+    generateName: collector-
+    labels:
+      component: collector
+      controller-revision-hash: 86f64478f4
+      logging-infra: collector
+      pod-template-generation: "28"
+      provider: openshift
+    name: collector-smmdd
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: collector
+      uid: 66abcd38-21fc-44eb-9556-691f08deb21d
+    resourceVersion: "18305827"
+    uid: 590bf731-51d0-48ef-95e4-ddd65481facc
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-135-221.eu-west-2.compute.internal
+    containers:
+    - env:
+      - name: COLLECTOR_CONF_HASH
+        value: ef94a9bdec78ba66b7e56fce8140f8fb
+      - name: TRUSTED_CA_HASH
+        value: 2ebb7ccd7aa7bead6579844ec442d938
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: NODE_IPV4
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      - name: OPENSHIFT_CLUSTER_ID
+        value: c5c849fb-3fcc-47ca-8d3c-acd4dab1ea3a
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIP
+      - name: POD_IPS
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIPs
+      - name: NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR
+        value: "0.9"
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imagePullPolicy: IfNotPresent
+      name: collector
+      ports:
+      - containerPort: 24231
+        name: metrics
+        protocol: TCP
+      resources:
+        limits:
+          memory: 736Mi
+        requests:
+          cpu: 100m
+          memory: 736Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /var/log/journal
+        name: varlogjournal
+        readOnly: true
+      - mountPath: /var/log/audit
+        name: varlogaudit
+        readOnly: true
+      - mountPath: /var/log/ovn
+        name: varlogovn
+        readOnly: true
+      - mountPath: /var/log/oauth-apiserver
+        name: varlogoauthapiserver
+        readOnly: true
+      - mountPath: /var/log/openshift-apiserver
+        name: varlogopenshiftapiserver
+        readOnly: true
+      - mountPath: /var/log/kube-apiserver
+        name: varlogkubeapiserver
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /tmp
+        name: tmp
+      - mountPath: /etc/pki/ca-trust/extracted/pem/
+        name: collector-trusted-ca-bundle
+        readOnly: true
+      - mountPath: /etc/fluent/keys
+        name: certs
+        readOnly: true
+      - mountPath: /etc/fluent/configs.d/user
+        name: config
+        readOnly: true
+      - mountPath: /var/lib/fluentd
+        name: datadir
+      - mountPath: /opt/app-root/src/run.sh
+        name: entrypoint
+        readOnly: true
+        subPath: run.sh
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-b42w7
+        readOnly: true
+    - args:
+      - -c
+      - /usr/local/bin/log-file-metric-exporter -verbosity=2 -dir=/var/log/pods -http=:2112
+        -keyFile=/etc/collector/metrics/tls.key -crtFile=/etc/collector/metrics/tls.crt
+      command:
+      - /bin/bash
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imagePullPolicy: IfNotPresent
+      name: logfilesmetricexporter
+      ports:
+      - containerPort: 2112
+        name: logfile-metrics
+        protocol: TCP
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-b42w7
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: logcollector-dockercfg-wc2bh
+    nodeName: ip-10-0-135-221.eu-west-2.compute.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    serviceAccount: logcollector
+    serviceAccountName: logcollector
+    terminationGracePeriodSeconds: 10
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - hostPath:
+        path: /var/log/containers
+        type: ""
+      name: varlogcontainers
+    - hostPath:
+        path: /var/log/pods
+        type: ""
+      name: varlogpods
+    - hostPath:
+        path: /var/log/journal
+        type: ""
+      name: varlogjournal
+    - hostPath:
+        path: /var/log/audit
+        type: ""
+      name: varlogaudit
+    - hostPath:
+        path: /var/log/ovn
+        type: ""
+      name: varlogovn
+    - hostPath:
+        path: /var/log/oauth-apiserver
+        type: ""
+      name: varlogoauthapiserver
+    - hostPath:
+        path: /var/log/openshift-apiserver
+        type: ""
+      name: varlogopenshiftapiserver
+    - hostPath:
+        path: /var/log/kube-apiserver
+        type: ""
+      name: varlogkubeapiserver
+    - name: collector-metrics
+      secret:
+        defaultMode: 420
+        secretName: collector-metrics
+    - emptyDir:
+        medium: Memory
+      name: tmp
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: ca-bundle.crt
+          path: tls-ca-bundle.pem
+        name: collector-trusted-ca-bundle
+      name: collector-trusted-ca-bundle
+    - name: certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: collector
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: config
+    - hostPath:
+        path: /var/lib/fluentd
+        type: ""
+      name: datadir
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: entrypoint
+    - name: kube-api-access-b42w7
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:06Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:09Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:09Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:06Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://afda615c1c7c339e85ad13e85c96047b56d3f961ce4e2c5c540d438eadd6fb23
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imageID: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:0513a12e2db2257d56ea9e1e4edd8817b2a7730958ac8d5a8dda0e352698388f
+      lastState: {}
+      name: collector
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:08Z"
+    - containerID: cri-o://3f15c1459faf4c66cac8761297c9db80ce416aee2ace1382e53e62fcf666746a
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imageID: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:0d2023c2503af25670e26c9e17cf4cf30bcdde49e6c671d7a8c44a50a6075a11
+      lastState: {}
+      name: logfilesmetricexporter
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:08Z"
+    hostIP: 10.0.135.221
+    phase: Running
+    podIP: 10.129.2.59
+    podIPs:
+    - ip: 10.129.2.59
+    qosClass: Burstable
+    startTime: "2023-02-21T13:14:06Z"
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      container.seccomp.security.alpha.kubernetes.io/collector: runtime/default
+      container.seccomp.security.alpha.kubernetes.io/logfilesmetricexporter: runtime/default
+      k8s.v1.cni.cncf.io/network-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.0.117"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      k8s.v1.cni.cncf.io/networks-status: |-
+        [{
+            "name": "openshift-sdn",
+            "interface": "eth0",
+            "ips": [
+                "10.128.0.117"
+            ],
+            "default": true,
+            "dns": {}
+        }]
+      openshift.io/scc: log-collector-scc
+      scheduler.alpha.kubernetes.io/critical-pod: ""
+      seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    creationTimestamp: "2023-02-21T13:14:06Z"
+    generateName: collector-
+    labels:
+      component: collector
+      controller-revision-hash: 86f64478f4
+      logging-infra: collector
+      pod-template-generation: "28"
+      provider: openshift
+    name: collector-t5b5x
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: DaemonSet
+      name: collector
+      uid: 66abcd38-21fc-44eb-9556-691f08deb21d
+    resourceVersion: "18305837"
+    uid: da83abdc-b886-462d-a409-85a682d876f8
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchFields:
+            - key: metadata.name
+              operator: In
+              values:
+              - ip-10-0-145-203.eu-west-2.compute.internal
+    containers:
+    - env:
+      - name: COLLECTOR_CONF_HASH
+        value: ef94a9bdec78ba66b7e56fce8140f8fb
+      - name: TRUSTED_CA_HASH
+        value: 2ebb7ccd7aa7bead6579844ec442d938
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: NODE_IPV4
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.hostIP
+      - name: OPENSHIFT_CLUSTER_ID
+        value: c5c849fb-3fcc-47ca-8d3c-acd4dab1ea3a
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIP
+      - name: POD_IPS
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: status.podIPs
+      - name: NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+      - name: RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR
+        value: "0.9"
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imagePullPolicy: IfNotPresent
+      name: collector
+      ports:
+      - containerPort: 24231
+        name: metrics
+        protocol: TCP
+      resources:
+        limits:
+          memory: 736Mi
+        requests:
+          cpu: 100m
+          memory: 736Mi
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /var/log/journal
+        name: varlogjournal
+        readOnly: true
+      - mountPath: /var/log/audit
+        name: varlogaudit
+        readOnly: true
+      - mountPath: /var/log/ovn
+        name: varlogovn
+        readOnly: true
+      - mountPath: /var/log/oauth-apiserver
+        name: varlogoauthapiserver
+        readOnly: true
+      - mountPath: /var/log/openshift-apiserver
+        name: varlogopenshiftapiserver
+        readOnly: true
+      - mountPath: /var/log/kube-apiserver
+        name: varlogkubeapiserver
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /tmp
+        name: tmp
+      - mountPath: /etc/pki/ca-trust/extracted/pem/
+        name: collector-trusted-ca-bundle
+        readOnly: true
+      - mountPath: /etc/fluent/keys
+        name: certs
+        readOnly: true
+      - mountPath: /etc/fluent/configs.d/user
+        name: config
+        readOnly: true
+      - mountPath: /var/lib/fluentd
+        name: datadir
+      - mountPath: /opt/app-root/src/run.sh
+        name: entrypoint
+        readOnly: true
+        subPath: run.sh
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-rv52q
+        readOnly: true
+    - args:
+      - -c
+      - /usr/local/bin/log-file-metric-exporter -verbosity=2 -dir=/var/log/pods -http=:2112
+        -keyFile=/etc/collector/metrics/tls.key -crtFile=/etc/collector/metrics/tls.crt
+      command:
+      - /bin/bash
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imagePullPolicy: IfNotPresent
+      name: logfilesmetricexporter
+      ports:
+      - containerPort: 2112
+        name: logfile-metrics
+        protocol: TCP
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - FSETID
+          - KILL
+          - NET_BIND_SERVICE
+          - SETGID
+          - SETPCAP
+          - SETUID
+        readOnlyRootFilesystem: true
+        seLinuxOptions:
+          type: spc_t
+        seccompProfile:
+          type: RuntimeDefault
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - mountPath: /var/log/containers
+        name: varlogcontainers
+        readOnly: true
+      - mountPath: /var/log/pods
+        name: varlogpods
+        readOnly: true
+      - mountPath: /etc/collector/metrics
+        name: collector-metrics
+        readOnly: true
+      - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+        name: kube-api-access-rv52q
+        readOnly: true
+    dnsPolicy: ClusterFirst
+    enableServiceLinks: true
+    imagePullSecrets:
+    - name: logcollector-dockercfg-wc2bh
+    nodeName: ip-10-0-145-203.eu-west-2.compute.internal
+    nodeSelector:
+      kubernetes.io/os: linux
+    preemptionPolicy: PreemptLowerPriority
+    priority: 2000001000
+    priorityClassName: system-node-critical
+    restartPolicy: Always
+    schedulerName: default-scheduler
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    serviceAccount: logcollector
+    serviceAccountName: logcollector
+    terminationGracePeriodSeconds: 10
+    tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/disk-pressure
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/memory-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/pid-pressure
+      operator: Exists
+    - effect: NoSchedule
+      key: node.kubernetes.io/unschedulable
+      operator: Exists
+    volumes:
+    - hostPath:
+        path: /var/log/containers
+        type: ""
+      name: varlogcontainers
+    - hostPath:
+        path: /var/log/pods
+        type: ""
+      name: varlogpods
+    - hostPath:
+        path: /var/log/journal
+        type: ""
+      name: varlogjournal
+    - hostPath:
+        path: /var/log/audit
+        type: ""
+      name: varlogaudit
+    - hostPath:
+        path: /var/log/ovn
+        type: ""
+      name: varlogovn
+    - hostPath:
+        path: /var/log/oauth-apiserver
+        type: ""
+      name: varlogoauthapiserver
+    - hostPath:
+        path: /var/log/openshift-apiserver
+        type: ""
+      name: varlogopenshiftapiserver
+    - hostPath:
+        path: /var/log/kube-apiserver
+        type: ""
+      name: varlogkubeapiserver
+    - name: collector-metrics
+      secret:
+        defaultMode: 420
+        secretName: collector-metrics
+    - emptyDir:
+        medium: Memory
+      name: tmp
+    - configMap:
+        defaultMode: 420
+        items:
+        - key: ca-bundle.crt
+          path: tls-ca-bundle.pem
+        name: collector-trusted-ca-bundle
+      name: collector-trusted-ca-bundle
+    - name: certs
+      secret:
+        defaultMode: 420
+        optional: true
+        secretName: collector
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: config
+    - hostPath:
+        path: /var/lib/fluentd
+        type: ""
+      name: datadir
+    - configMap:
+        defaultMode: 420
+        name: collector
+      name: entrypoint
+    - name: kube-api-access-rv52q
+      projected:
+        defaultMode: 420
+        sources:
+        - serviceAccountToken:
+            expirationSeconds: 3607
+            path: token
+        - configMap:
+            items:
+            - key: ca.crt
+              path: ca.crt
+            name: kube-root-ca.crt
+        - downwardAPI:
+            items:
+            - fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+              path: namespace
+        - configMap:
+            items:
+            - key: service-ca.crt
+              path: service-ca.crt
+            name: openshift-service-ca.crt
+  status:
+    conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:06Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:10Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:10Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2023-02-21T13:14:06Z"
+      status: "True"
+      type: PodScheduled
+    containerStatuses:
+    - containerID: cri-o://b59056dd2958ed69e21749177ef5394749e7b67e36590517c3f6581704bacccc
+      image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+      imageID: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:0513a12e2db2257d56ea9e1e4edd8817b2a7730958ac8d5a8dda0e352698388f
+      lastState: {}
+      name: collector
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:09Z"
+    - containerID: cri-o://2dfeb6fc43eb68825aa86c0b39a34c5a8ecd8345510a81b74c2f51c1fb94591c
+      image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+      imageID: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:0d2023c2503af25670e26c9e17cf4cf30bcdde49e6c671d7a8c44a50a6075a11
+      lastState: {}
+      name: logfilesmetricexporter
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-02-21T13:14:09Z"
+    hostIP: 10.0.145.203
+    phase: Running
+    podIP: 10.128.0.117
+    podIPs:
+    - ip: 10.128.0.117
+    qosClass: Burstable
+    startTime: "2023-02-21T13:14:06Z"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: "2023-01-26T14:11:06Z"
+    labels:
+      name: cluster-logging-operator
+      operators.coreos.com/cluster-logging.openshift-logging: ""
+    name: cluster-logging-operator-metrics
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: operators.coreos.com/v1alpha1
+      blockOwnerDeletion: false
+      controller: false
+      kind: ClusterServiceVersion
+      name: cluster-logging.v5.6.2
+      uid: f9187193-1b74-4a71-86c6-a2ca32b34814
+    resourceVersion: "13409856"
+    uid: 99a9c006-3adf-49a3-a8df-b5a5d7a53b95
+  spec:
+    clusterIP: 172.30.250.182
+    clusterIPs:
+    - 172.30.250.182
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-metrics
+      port: 8686
+      protocol: TCP
+      targetPort: 8686
+    selector:
+      name: cluster-logging-operator
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: collector-metrics
+      service.alpha.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1674741011
+      service.beta.openshift.io/serving-cert-signed-by: openshift-service-serving-signer@1674741011
+    creationTimestamp: "2023-01-26T15:10:13Z"
+    labels:
+      logging-infra: support
+    name: collector
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: logging.openshift.io/v1
+      controller: true
+      kind: ClusterLogging
+      name: instance
+      uid: 1999ec01-f18f-49fc-8f7f-6d785be6d177
+    resourceVersion: "47751"
+    uid: 81699ec6-0814-4475-8fe4-5619bf2cfd2c
+  spec:
+    clusterIP: 172.30.139.91
+    clusterIPs:
+    - 172.30.139.91
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: metrics
+      port: 24231
+      protocol: TCP
+      targetPort: metrics
+    - name: logfile-metrics
+      port: 2112
+      protocol: TCP
+      targetPort: logfile-metrics
+    selector:
+      component: collector
+      provider: openshift
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    annotations:
+      deprecated.daemonset.template.generation: "28"
+    creationTimestamp: "2023-01-26T15:10:25Z"
+    generation: 28
+    labels:
+      component: collector
+      logging-infra: collector
+      provider: openshift
+    name: collector
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: logging.openshift.io/v1
+      controller: true
+      kind: ClusterLogging
+      name: instance
+      uid: 1999ec01-f18f-49fc-8f7f-6d785be6d177
+    resourceVersion: "18305841"
+    uid: 66abcd38-21fc-44eb-9556-691f08deb21d
+  spec:
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        component: collector
+        logging-infra: collector
+        provider: openshift
+    template:
+      metadata:
+        annotations:
+          scheduler.alpha.kubernetes.io/critical-pod: ""
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          component: collector
+          logging-infra: collector
+          provider: openshift
+        name: collector
+      spec:
+        containers:
+        - env:
+          - name: COLLECTOR_CONF_HASH
+            value: ef94a9bdec78ba66b7e56fce8140f8fb
+          - name: TRUSTED_CA_HASH
+            value: 2ebb7ccd7aa7bead6579844ec442d938
+          - name: K8S_NODE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          - name: NODE_IPV4
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.hostIP
+          - name: OPENSHIFT_CLUSTER_ID
+            value: c5c849fb-3fcc-47ca-8d3c-acd4dab1ea3a
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIP
+          - name: POD_IPS
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIPs
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          - name: RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR
+            value: "0.9"
+          image: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+          imagePullPolicy: IfNotPresent
+          name: collector
+          ports:
+          - containerPort: 24231
+            name: metrics
+            protocol: TCP
+          resources:
+            limits:
+              memory: 736Mi
+            requests:
+              cpu: 100m
+              memory: 736Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - CHOWN
+              - DAC_OVERRIDE
+              - FOWNER
+              - FSETID
+              - KILL
+              - NET_BIND_SERVICE
+              - SETGID
+              - SETPCAP
+              - SETUID
+            readOnlyRootFilesystem: true
+            seLinuxOptions:
+              type: spc_t
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/log/containers
+            name: varlogcontainers
+            readOnly: true
+          - mountPath: /var/log/pods
+            name: varlogpods
+            readOnly: true
+          - mountPath: /var/log/journal
+            name: varlogjournal
+            readOnly: true
+          - mountPath: /var/log/audit
+            name: varlogaudit
+            readOnly: true
+          - mountPath: /var/log/ovn
+            name: varlogovn
+            readOnly: true
+          - mountPath: /var/log/oauth-apiserver
+            name: varlogoauthapiserver
+            readOnly: true
+          - mountPath: /var/log/openshift-apiserver
+            name: varlogopenshiftapiserver
+            readOnly: true
+          - mountPath: /var/log/kube-apiserver
+            name: varlogkubeapiserver
+            readOnly: true
+          - mountPath: /etc/collector/metrics
+            name: collector-metrics
+            readOnly: true
+          - mountPath: /tmp
+            name: tmp
+          - mountPath: /etc/pki/ca-trust/extracted/pem/
+            name: collector-trusted-ca-bundle
+            readOnly: true
+          - mountPath: /etc/fluent/keys
+            name: certs
+            readOnly: true
+          - mountPath: /etc/fluent/configs.d/user
+            name: config
+            readOnly: true
+          - mountPath: /var/lib/fluentd
+            name: datadir
+          - mountPath: /opt/app-root/src/run.sh
+            name: entrypoint
+            readOnly: true
+            subPath: run.sh
+        - args:
+          - -c
+          - /usr/local/bin/log-file-metric-exporter -verbosity=2 -dir=/var/log/pods
+            -http=:2112 -keyFile=/etc/collector/metrics/tls.key -crtFile=/etc/collector/metrics/tls.crt
+          command:
+          - /bin/bash
+          image: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+          imagePullPolicy: IfNotPresent
+          name: logfilesmetricexporter
+          ports:
+          - containerPort: 2112
+            name: logfile-metrics
+            protocol: TCP
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - CHOWN
+              - DAC_OVERRIDE
+              - FOWNER
+              - FSETID
+              - KILL
+              - NET_BIND_SERVICE
+              - SETGID
+              - SETPCAP
+              - SETUID
+            readOnlyRootFilesystem: true
+            seLinuxOptions:
+              type: spc_t
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/log/containers
+            name: varlogcontainers
+            readOnly: true
+          - mountPath: /var/log/pods
+            name: varlogpods
+            readOnly: true
+          - mountPath: /etc/collector/metrics
+            name: collector-metrics
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        priorityClassName: system-node-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        serviceAccount: logcollector
+        serviceAccountName: logcollector
+        terminationGracePeriodSeconds: 10
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node.kubernetes.io/disk-pressure
+          operator: Exists
+        volumes:
+        - hostPath:
+            path: /var/log/containers
+            type: ""
+          name: varlogcontainers
+        - hostPath:
+            path: /var/log/pods
+            type: ""
+          name: varlogpods
+        - hostPath:
+            path: /var/log/journal
+            type: ""
+          name: varlogjournal
+        - hostPath:
+            path: /var/log/audit
+            type: ""
+          name: varlogaudit
+        - hostPath:
+            path: /var/log/ovn
+            type: ""
+          name: varlogovn
+        - hostPath:
+            path: /var/log/oauth-apiserver
+            type: ""
+          name: varlogoauthapiserver
+        - hostPath:
+            path: /var/log/openshift-apiserver
+            type: ""
+          name: varlogopenshiftapiserver
+        - hostPath:
+            path: /var/log/kube-apiserver
+            type: ""
+          name: varlogkubeapiserver
+        - name: collector-metrics
+          secret:
+            defaultMode: 420
+            secretName: collector-metrics
+        - emptyDir:
+            medium: Memory
+          name: tmp
+        - configMap:
+            defaultMode: 420
+            items:
+            - key: ca-bundle.crt
+              path: tls-ca-bundle.pem
+            name: collector-trusted-ca-bundle
+          name: collector-trusted-ca-bundle
+        - name: certs
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: collector
+        - configMap:
+            defaultMode: 420
+            name: collector
+          name: config
+        - hostPath:
+            path: /var/lib/fluentd
+            type: ""
+          name: datadir
+        - configMap:
+            defaultMode: 420
+            name: collector
+          name: entrypoint
+    updateStrategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 100%
+      type: RollingUpdate
+  status:
+    currentNumberScheduled: 6
+    desiredNumberScheduled: 6
+    numberAvailable: 6
+    numberMisscheduled: 0
+    numberReady: 6
+    observedGeneration: 28
+    updatedNumberScheduled: 6
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "3"
+    creationTimestamp: "2023-01-26T14:11:07Z"
+    generation: 70
+    labels:
+      olm.deployment-spec-hash: 6866789ff5
+      olm.owner: cluster-logging.v5.6.2
+      olm.owner.kind: ClusterServiceVersion
+      olm.owner.namespace: openshift-logging
+      operators.coreos.com/cluster-logging.openshift-logging: ""
+    name: cluster-logging-operator
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: operators.coreos.com/v1alpha1
+      blockOwnerDeletion: false
+      controller: false
+      kind: ClusterServiceVersion
+      name: cluster-logging.v5.6.2
+      uid: f9187193-1b74-4a71-86c6-a2ca32b34814
+    resourceVersion: "17881249"
+    uid: 290f4059-acc7-4801-b75a-7219c174ce0a
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 1
+    selector:
+      matchLabels:
+        name: cluster-logging-operator
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          alm-examples: |-
+            [
+              {
+                "apiVersion": "logging.openshift.io/v1",
+                "kind": "ClusterLogForwarder",
+                "metadata": {
+                  "name": "instance",
+                  "namespace": "openshift-logging"
+                },
+                "spec": {
+                  "outputs": [
+                    {
+                      "name": "remote-elasticsearch",
+                      "secret": {
+                        "name": "elasticsearch"
+                      },
+                      "type": "elasticsearch",
+                      "url": "remote.example.org:9200"
+                    }
+                  ],
+                  "pipelines": [
+                    {
+                      "inputRefs": [
+                        "application",
+                        "audit",
+                        "infrastructure"
+                      ],
+                      "name": "enable-default-log-store",
+                      "outputRefs": [
+                        "default"
+                      ]
+                    },
+                    {
+                      "inputRefs": [
+                        "application"
+                      ],
+                      "name": "forward-to-remote",
+                      "outputRefs": [
+                        "remote-elasticsearch"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "apiVersion": "logging.openshift.io/v1",
+                "kind": "ClusterLogging",
+                "metadata": {
+                  "name": "instance",
+                  "namespace": "openshift-logging"
+                },
+                "spec": {
+                  "collection": {
+                    "type": "fluentd"
+                  },
+                  "logStore": {
+                    "elasticsearch": {
+                      "nodeCount": 3,
+                      "redundancyPolicy": "SingleRedundancy",
+                      "resources": {
+                        "requests": {
+                          "memory": "2Gi"
+                        }
+                      },
+                      "storage": {
+                        "size": "200G",
+                        "storageClassName": "gp2"
+                      }
+                    },
+                    "retentionPolicy": {
+                      "application": {
+                        "maxAge": "7d"
+                      }
+                    },
+                    "type": "elasticsearch"
+                  },
+                  "managementState": "Managed",
+                  "visualization": {
+                    "kibana": {
+                      "replicas": 1
+                    },
+                    "type": "kibana"
+                  }
+                }
+              }
+            ]
+          capabilities: Seamless Upgrades
+          categories: OpenShift Optional, Logging & Tracing
+          certified: "false"
+          console.openshift.io/plugins: '["logging-view-plugin"]'
+          containerImage: registry.redhat.io/openshift-logging/cluster-logging-rhel8-operator@sha256:1b73b8235925fc895168b52a77ebcf10e0133fd69871213d2c0fc17a4684305a
+          createdAt: "2018-08-01T08:00:00Z"
+          description: The Red Hat OpenShift Logging Operator for OCP provides a means
+            for configuring and managing your aggregated logging stack.
+          kubectl.kubernetes.io/default-container: cluster-logging-operator
+          olm.operatorGroup: openshift-logging-lqnvj
+          olm.operatorNamespace: openshift-logging
+          olm.skipRange: '>=4.6.0-0 <5.6.2'
+          olm.targetNamespaces: openshift-logging
+          operatorframework.io/cluster-monitoring: "true"
+          operatorframework.io/properties: '{"properties":[{"type":"olm.gvk","value":{"group":"logging.openshift.io","kind":"ClusterLogForwarder","version":"v1"}},{"type":"olm.gvk","value":{"group":"logging.openshift.io","kind":"ClusterLogging","version":"v1"}},{"type":"olm.maxOpenShiftVersion","value":4.14},{"type":"olm.package","value":{"packageName":"cluster-logging","version":"5.6.2"}}]}'
+          operatorframework.io/suggested-namespace: openshift-logging
+          operators.openshift.io/infrastructure-features: '["disconnected","proxy-aware"]'
+          operators.openshift.io/valid-subscription: '["OpenShift Kubernetes Engine",
+            "OpenShift Container Platform", "OpenShift Platform Plus"]'
+          operators.operatorframework.io/builder: operator-sdk-unknown
+          operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+          support: AOS Logging (team-logging@redhat.com)
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          name: cluster-logging-operator
+      spec:
+        containers:
+        - command:
+          - cluster-logging-operator
+          env:
+          - name: WATCH_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.annotations['olm.targetNamespaces']
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: OPERATOR_NAME
+            value: cluster-logging-operator
+          - name: RELATED_IMAGE_VECTOR
+            value: registry.redhat.io/openshift-logging/vector-rhel8@sha256:3d641bd3844c3c350681cea24ddcda58568e647db2044403dfbe22fb9f6c3d52
+          - name: RELATED_IMAGE_FLUENTD
+            value: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+          - name: RELATED_IMAGE_LOG_FILE_METRIC_EXPORTER
+            value: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+          - name: RELATED_IMAGE_LOGGING_CONSOLE_PLUGIN
+            value: registry.redhat.io/openshift-logging/logging-view-plugin-rhel8@sha256:ea208727faa0e1b975ce1026aeb7fd0c6b6d1b6422af7098ecf03e2430c020ad
+          - name: OPERATOR_CONDITION_NAME
+            value: cluster-logging.v5.6.2
+          image: registry.redhat.io/openshift-logging/cluster-logging-rhel8-operator@sha256:1b73b8235925fc895168b52a77ebcf10e0133fd69871213d2c0fc17a4684305a
+          imagePullPolicy: IfNotPresent
+          name: cluster-logging-operator
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          runAsNonRoot: true
+        serviceAccount: cluster-logging-operator
+        serviceAccountName: cluster-logging-operator
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2023-01-26T14:11:07Z"
+      lastUpdateTime: "2023-02-16T17:36:48Z"
+      message: ReplicaSet "cluster-logging-operator-7db5c79ccf" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: "2023-02-21T03:16:49Z"
+      lastUpdateTime: "2023-02-21T03:16:49Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    observedGeneration: 70
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "2"
+    creationTimestamp: "2023-02-09T14:09:53Z"
+    generation: 2
+    labels:
+      name: cluster-logging-operator
+      pod-template-hash: 758cdb7c7b
+    name: cluster-logging-operator-758cdb7c7b
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: cluster-logging-operator
+      uid: 290f4059-acc7-4801-b75a-7219c174ce0a
+    resourceVersion: "13413186"
+    uid: 13585ddb-6071-4e1f-96f9-8202ab71cf4d
+  spec:
+    replicas: 0
+    selector:
+      matchLabels:
+        name: cluster-logging-operator
+        pod-template-hash: 758cdb7c7b
+    template:
+      metadata:
+        annotations:
+          alm-examples: |-
+            [
+              {
+                "apiVersion": "logging.openshift.io/v1",
+                "kind": "ClusterLogForwarder",
+                "metadata": {
+                  "name": "instance",
+                  "namespace": "openshift-logging"
+                },
+                "spec": {
+                  "outputs": [
+                    {
+                      "name": "remote-elasticsearch",
+                      "secret": {
+                        "name": "elasticsearch"
+                      },
+                      "type": "elasticsearch",
+                      "url": "remote.example.org:9200"
+                    }
+                  ],
+                  "pipelines": [
+                    {
+                      "inputRefs": [
+                        "application",
+                        "audit",
+                        "infrastructure"
+                      ],
+                      "name": "enable-default-log-store",
+                      "outputRefs": [
+                        "default"
+                      ]
+                    },
+                    {
+                      "inputRefs": [
+                        "application"
+                      ],
+                      "name": "forward-to-remote",
+                      "outputRefs": [
+                        "remote-elasticsearch"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "apiVersion": "logging.openshift.io/v1",
+                "kind": "ClusterLogging",
+                "metadata": {
+                  "name": "instance",
+                  "namespace": "openshift-logging"
+                },
+                "spec": {
+                  "collection": {
+                    "type": "fluentd"
+                  },
+                  "logStore": {
+                    "elasticsearch": {
+                      "nodeCount": 3,
+                      "redundancyPolicy": "SingleRedundancy",
+                      "resources": {
+                        "requests": {
+                          "memory": "2Gi"
+                        }
+                      },
+                      "storage": {
+                        "size": "200G",
+                        "storageClassName": "gp2"
+                      }
+                    },
+                    "retentionPolicy": {
+                      "application": {
+                        "maxAge": "7d"
+                      }
+                    },
+                    "type": "elasticsearch"
+                  },
+                  "managementState": "Managed",
+                  "visualization": {
+                    "kibana": {
+                      "replicas": 1
+                    },
+                    "type": "kibana"
+                  }
+                }
+              }
+            ]
+          capabilities: Seamless Upgrades
+          categories: OpenShift Optional, Logging & Tracing
+          certified: "false"
+          console.openshift.io/plugins: '["logging-view-plugin"]'
+          containerImage: registry.redhat.io/openshift-logging/cluster-logging-rhel8-operator@sha256:16232a61646cf1d844fcaeaa42a2f1abea3c54a4b256ffab8159292c5ff6fe8e
+          createdAt: "2018-08-01T08:00:00Z"
+          description: The Red Hat OpenShift Logging Operator for OCP provides a means
+            for configuring and managing your aggregated logging stack.
+          kubectl.kubernetes.io/default-container: cluster-logging-operator
+          olm.operatorGroup: openshift-logging-lqnvj
+          olm.operatorNamespace: openshift-logging
+          olm.skipRange: '>=4.6.0-0 <5.6.1'
+          olm.targetNamespaces: openshift-logging
+          operatorframework.io/cluster-monitoring: "true"
+          operatorframework.io/properties: '{"properties":[{"type":"olm.gvk","value":{"group":"logging.openshift.io","kind":"ClusterLogForwarder","version":"v1"}},{"type":"olm.gvk","value":{"group":"logging.openshift.io","kind":"ClusterLogging","version":"v1"}},{"type":"olm.maxOpenShiftVersion","value":4.12},{"type":"olm.package","value":{"packageName":"cluster-logging","version":"5.6.1"}}]}'
+          operatorframework.io/suggested-namespace: openshift-logging
+          operators.openshift.io/infrastructure-features: '["disconnected","proxy-aware"]'
+          operators.openshift.io/valid-subscription: '["OpenShift Kubernetes Engine",
+            "OpenShift Container Platform", "OpenShift Platform Plus"]'
+          operators.operatorframework.io/builder: operator-sdk-unknown
+          operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+          support: AOS Logging (team-logging@redhat.com)
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          name: cluster-logging-operator
+          pod-template-hash: 758cdb7c7b
+      spec:
+        containers:
+        - command:
+          - cluster-logging-operator
+          env:
+          - name: WATCH_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.annotations['olm.targetNamespaces']
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: OPERATOR_NAME
+            value: cluster-logging-operator
+          - name: RELATED_IMAGE_VECTOR
+            value: registry.redhat.io/openshift-logging/vector-rhel8@sha256:9983116e7d0d8d3391cec5d2aa314b791cfddc0225424f2785a29a0484d40b1c
+          - name: RELATED_IMAGE_FLUENTD
+            value: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:d0758b923c6248264abc8813b4886acfc0af011ff2c3661bd268598710cbcfb4
+          - name: RELATED_IMAGE_LOG_FILE_METRIC_EXPORTER
+            value: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:2fc2cdaf285e75fa6418bcaf59d28e9406948c325edb4d5d8fb5330b02aaae64
+          - name: RELATED_IMAGE_LOGGING_CONSOLE_PLUGIN
+            value: registry.redhat.io/openshift-logging/logging-view-plugin-rhel8@sha256:44a4a37cde32e066dcddf870ecc3d94130c03434e770c245568a51ced3d0d8af
+          - name: OPERATOR_CONDITION_NAME
+            value: cluster-logging.v5.6.1
+          image: registry.redhat.io/openshift-logging/cluster-logging-rhel8-operator@sha256:16232a61646cf1d844fcaeaa42a2f1abea3c54a4b256ffab8159292c5ff6fe8e
+          imagePullPolicy: IfNotPresent
+          name: cluster-logging-operator
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          runAsNonRoot: true
+        serviceAccount: cluster-logging-operator
+        serviceAccountName: cluster-logging-operator
+        terminationGracePeriodSeconds: 30
+  status:
+    observedGeneration: 2
+    replicas: 0
+- apiVersion: apps/v1
+  kind: ReplicaSet
+  metadata:
+    annotations:
+      deployment.kubernetes.io/desired-replicas: "1"
+      deployment.kubernetes.io/max-replicas: "2"
+      deployment.kubernetes.io/revision: "3"
+    creationTimestamp: "2023-02-16T17:33:07Z"
+    generation: 1
+    labels:
+      name: cluster-logging-operator
+      pod-template-hash: 7db5c79ccf
+    name: cluster-logging-operator-7db5c79ccf
+    namespace: openshift-logging
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Deployment
+      name: cluster-logging-operator
+      uid: 290f4059-acc7-4801-b75a-7219c174ce0a
+    resourceVersion: "17881217"
+    uid: 47d94073-c19f-45e9-a071-3d739c32953a
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        name: cluster-logging-operator
+        pod-template-hash: 7db5c79ccf
+    template:
+      metadata:
+        annotations:
+          alm-examples: |-
+            [
+              {
+                "apiVersion": "logging.openshift.io/v1",
+                "kind": "ClusterLogForwarder",
+                "metadata": {
+                  "name": "instance",
+                  "namespace": "openshift-logging"
+                },
+                "spec": {
+                  "outputs": [
+                    {
+                      "name": "remote-elasticsearch",
+                      "secret": {
+                        "name": "elasticsearch"
+                      },
+                      "type": "elasticsearch",
+                      "url": "remote.example.org:9200"
+                    }
+                  ],
+                  "pipelines": [
+                    {
+                      "inputRefs": [
+                        "application",
+                        "audit",
+                        "infrastructure"
+                      ],
+                      "name": "enable-default-log-store",
+                      "outputRefs": [
+                        "default"
+                      ]
+                    },
+                    {
+                      "inputRefs": [
+                        "application"
+                      ],
+                      "name": "forward-to-remote",
+                      "outputRefs": [
+                        "remote-elasticsearch"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "apiVersion": "logging.openshift.io/v1",
+                "kind": "ClusterLogging",
+                "metadata": {
+                  "name": "instance",
+                  "namespace": "openshift-logging"
+                },
+                "spec": {
+                  "collection": {
+                    "type": "fluentd"
+                  },
+                  "logStore": {
+                    "elasticsearch": {
+                      "nodeCount": 3,
+                      "redundancyPolicy": "SingleRedundancy",
+                      "resources": {
+                        "requests": {
+                          "memory": "2Gi"
+                        }
+                      },
+                      "storage": {
+                        "size": "200G",
+                        "storageClassName": "gp2"
+                      }
+                    },
+                    "retentionPolicy": {
+                      "application": {
+                        "maxAge": "7d"
+                      }
+                    },
+                    "type": "elasticsearch"
+                  },
+                  "managementState": "Managed",
+                  "visualization": {
+                    "kibana": {
+                      "replicas": 1
+                    },
+                    "type": "kibana"
+                  }
+                }
+              }
+            ]
+          capabilities: Seamless Upgrades
+          categories: OpenShift Optional, Logging & Tracing
+          certified: "false"
+          console.openshift.io/plugins: '["logging-view-plugin"]'
+          containerImage: registry.redhat.io/openshift-logging/cluster-logging-rhel8-operator@sha256:1b73b8235925fc895168b52a77ebcf10e0133fd69871213d2c0fc17a4684305a
+          createdAt: "2018-08-01T08:00:00Z"
+          description: The Red Hat OpenShift Logging Operator for OCP provides a means
+            for configuring and managing your aggregated logging stack.
+          kubectl.kubernetes.io/default-container: cluster-logging-operator
+          olm.operatorGroup: openshift-logging-lqnvj
+          olm.operatorNamespace: openshift-logging
+          olm.skipRange: '>=4.6.0-0 <5.6.2'
+          olm.targetNamespaces: openshift-logging
+          operatorframework.io/cluster-monitoring: "true"
+          operatorframework.io/properties: '{"properties":[{"type":"olm.gvk","value":{"group":"logging.openshift.io","kind":"ClusterLogForwarder","version":"v1"}},{"type":"olm.gvk","value":{"group":"logging.openshift.io","kind":"ClusterLogging","version":"v1"}},{"type":"olm.maxOpenShiftVersion","value":4.14},{"type":"olm.package","value":{"packageName":"cluster-logging","version":"5.6.2"}}]}'
+          operatorframework.io/suggested-namespace: openshift-logging
+          operators.openshift.io/infrastructure-features: '["disconnected","proxy-aware"]'
+          operators.openshift.io/valid-subscription: '["OpenShift Kubernetes Engine",
+            "OpenShift Container Platform", "OpenShift Platform Plus"]'
+          operators.operatorframework.io/builder: operator-sdk-unknown
+          operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+          support: AOS Logging (team-logging@redhat.com)
+          target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+        creationTimestamp: null
+        labels:
+          name: cluster-logging-operator
+          pod-template-hash: 7db5c79ccf
+      spec:
+        containers:
+        - command:
+          - cluster-logging-operator
+          env:
+          - name: WATCH_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.annotations['olm.targetNamespaces']
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: OPERATOR_NAME
+            value: cluster-logging-operator
+          - name: RELATED_IMAGE_VECTOR
+            value: registry.redhat.io/openshift-logging/vector-rhel8@sha256:3d641bd3844c3c350681cea24ddcda58568e647db2044403dfbe22fb9f6c3d52
+          - name: RELATED_IMAGE_FLUENTD
+            value: registry.redhat.io/openshift-logging/fluentd-rhel8@sha256:f6fbb4a30c383cb10d2ca6d709764e9fe8c5b7f560f8ddd19045d71732a4a986
+          - name: RELATED_IMAGE_LOG_FILE_METRIC_EXPORTER
+            value: registry.redhat.io/openshift-logging/log-file-metric-exporter-rhel8@sha256:350b74e8068bcd165ed14136cb1fbc52c044615f0695a1f539bb30a89edc8c3c
+          - name: RELATED_IMAGE_LOGGING_CONSOLE_PLUGIN
+            value: registry.redhat.io/openshift-logging/logging-view-plugin-rhel8@sha256:ea208727faa0e1b975ce1026aeb7fd0c6b6d1b6422af7098ecf03e2430c020ad
+          - name: OPERATOR_CONDITION_NAME
+            value: cluster-logging.v5.6.2
+          image: registry.redhat.io/openshift-logging/cluster-logging-rhel8-operator@sha256:1b73b8235925fc895168b52a77ebcf10e0133fd69871213d2c0fc17a4684305a
+          imagePullPolicy: IfNotPresent
+          name: cluster-logging-operator
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        nodeSelector:
+          kubernetes.io/os: linux
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          runAsNonRoot: true
+        serviceAccount: cluster-logging-operator
+        serviceAccountName: cluster-logging-operator
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    fullyLabeledReplicas: 1
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

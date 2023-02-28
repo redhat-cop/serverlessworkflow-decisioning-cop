@@ -1,0 +1,21 @@
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  inputs:
+    - application:
+        namespaces:
+          - quarkus-app
+      name: my-app-logs
+  outputs:
+    - name: remote-kafka
+      type: kafka
+      url: tcp://kafka-cluster-kafka-bootstrap.kafka-log.svc.cluster.local:9092/logs-app
+  pipelines:
+    - inputRefs:
+        - my-app-logs
+      name: my-app
+      outputRefs:
+        - remote-kafka
