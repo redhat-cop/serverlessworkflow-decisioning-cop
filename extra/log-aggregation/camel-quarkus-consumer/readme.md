@@ -1,0 +1,1 @@
+Camel Quarkus Consumer
