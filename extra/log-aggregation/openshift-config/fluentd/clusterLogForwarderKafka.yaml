@@ -1,0 +1,25 @@
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  inputs:
+    - application:
+        namespaces:
+          - fluentd-poc
+      name: my-app-logs
+  outputs:
+    - name: remote-kafka
+      type: kafka
+      url: tcp://kafka-cluster-kafka-bootstrap.kafka-log.svc.cluster.local:9092/logs-app
+    - name: loganalyzer
+      type: fluentdForward
+      url: 'tcp://log-analyser-unmanaged.log-analyser.svc.cluster.local:8008'
+  pipelines:
+    - inputRefs:
+        - my-app-logs
+      name: my-app
+      outputRefs:
+        - remote-kafka
+        - loganalyzer

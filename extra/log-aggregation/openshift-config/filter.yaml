@@ -1,0 +1,40 @@
+<label @REMOTE_KAFKA>
+      <match **>
+        @type kafka2
+        @id remote_kafka
+        brokers kafka-cluster-kafka-bootstrap.kafka-log.svc.cluster.local:9092
+        default_topic logs-app
+        use_event_time true
+        <filter message_received>
+          @type grep
+          <regexp>
+            key message
+            pattern /^(?<date>\d{1,4}-\d{1,2}-\d{1,2}) (?<time>\d{1,2}:\d{1,2}:\d{1,2}\.\d{1,3})  (?<level>\S+) (?<thread>(.*)[ ]):(?<event_type>(.*)Received message): (?<source>[\w\d]*).(?<target>[\w\d]*).(?<msg_type>[\w\d]*).(?<sequence>[ \d]*$)/
+          </regexp>
+          <inject>
+            Direction CEN_TO_DEP
+            PLATFORM DIF_CEN_ROUTER
+            EVENT_TYPE MSG_STORED
+           </inject>
+         </filter>
+        <format>
+          @type json
+        </format>
+        <buffer logs-app>
+          @type file
+          path '/var/lib/fluentd/remote_kafka'
+          flush_mode interval
+          flush_interval 1s
+          flush_thread_count 2
+          retry_type exponential_backoff
+          retry_wait 1s
+          retry_max_interval 60s
+          retry_timeout 60m
+          queued_chunks_limit_size "#{ENV['BUFFER_QUEUE_LIMIT'] || '32'}"
+          total_limit_size "#{ENV['TOTAL_LIMIT_SIZE_PER_BUFFER'] || '8589934592'}"
+          chunk_limit_size "#{ENV['BUFFER_SIZE_LIMIT'] || '8m'}"
+          overflow_action block
+          disable_chunk_backup true
+        </buffer>
+      </match>
+    </label>
