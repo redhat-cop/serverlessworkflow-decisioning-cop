@@ -1,0 +1,125 @@
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+    app.openshift.io/vcs-url: <<unknown>>
+    app.quarkus.io/commit-id: 063ab2294ab9c8f10ee4ff5d80d9a366cbc0b7a0
+    app.quarkus.io/build-timestamp: 2023-02-15 - 17:16:30 +0000
+  labels:
+    app.kubernetes.io/name: quarkus-app
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    app.openshift.io/runtime: quarkus
+  name: quarkus-app
+spec:
+  replicas: 1
+  selector:
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    app.kubernetes.io/name: quarkus-app
+  template:
+    metadata:
+      annotations:
+        app.openshift.io/vcs-url: <<unknown>>
+        app.quarkus.io/commit-id: 063ab2294ab9c8f10ee4ff5d80d9a366cbc0b7a0
+        app.quarkus.io/build-timestamp: 2023-02-15 - 17:16:30 +0000
+      labels:
+        app.kubernetes.io/version: 1.0.0-SNAPSHOT
+        app.kubernetes.io/name: quarkus-app
+        app.openshift.io/runtime: quarkus
+    spec:
+      containers:
+        - env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: JAVA_APP_JAR
+              value: /deployments/quarkus-run.jar
+          image: jhawkins/quarkus-app:1.0.0-SNAPSHOT
+          imagePullPolicy: Always
+          name: quarkus-app
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+  triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - quarkus-app
+        from:
+          kind: ImageStreamTag
+          name: quarkus-app:1.0.0-SNAPSHOT
+      type: ImageChange
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  annotations:
+    app.openshift.io/vcs-url: <<unknown>>
+    app.quarkus.io/commit-id: 063ab2294ab9c8f10ee4ff5d80d9a366cbc0b7a0
+    app.quarkus.io/build-timestamp: 2023-02-15 - 17:16:30 +0000
+  labels:
+    app.kubernetes.io/name: quarkus-app
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    app.openshift.io/runtime: quarkus
+  name: quarkus-app
+spec: {}
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    app.kubernetes.io/name: quarkus-app
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  name: openjdk-11
+spec:
+  dockerImageRepository: registry.access.redhat.com/ubi8/openjdk-11
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.openshift.io/vcs-url: <<unknown>>
+    app.quarkus.io/commit-id: 063ab2294ab9c8f10ee4ff5d80d9a366cbc0b7a0
+    app.quarkus.io/build-timestamp: 2023-02-15 - 17:16:30 +0000
+  labels:
+    app.kubernetes.io/name: quarkus-app
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    app.openshift.io/runtime: quarkus
+  name: quarkus-app
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: quarkus-app
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  type: ClusterIP
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  annotations:
+    app.openshift.io/vcs-url: <<unknown>>
+    app.quarkus.io/commit-id: 063ab2294ab9c8f10ee4ff5d80d9a366cbc0b7a0
+    app.quarkus.io/build-timestamp: 2023-02-15 - 17:16:30 +0000
+  labels:
+    app.kubernetes.io/name: quarkus-app
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    app.openshift.io/runtime: quarkus
+  name: quarkus-app
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: quarkus-app:1.0.0-SNAPSHOT
+  source:
+    binary: {}
+  strategy:
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: openjdk-11:1.14
