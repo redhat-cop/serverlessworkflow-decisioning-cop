@@ -1,0 +1,52 @@
+[{
+  "apiVersion" : "apps/v1",
+  "kind" : "Deployment",
+  "metadata" : {
+    "annotations" : {
+      "app.quarkus.io/build-timestamp" : "2023-02-23 - 15:15:08 +0000"
+    },
+    "labels" : {
+      "app.kubernetes.io/version" : "1.0.0-SNAPSHOT",
+      "app.kubernetes.io/name" : "camel-quarkus-consumer"
+    },
+    "name" : "camel-quarkus-consumer"
+  },
+  "spec" : {
+    "replicas" : 1,
+    "selector" : {
+      "matchLabels" : {
+        "app.kubernetes.io/version" : "1.0.0-SNAPSHOT",
+        "app.kubernetes.io/name" : "camel-quarkus-consumer"
+      }
+    },
+    "template" : {
+      "metadata" : {
+        "annotations" : {
+          "app.quarkus.io/build-timestamp" : "2023-02-23 - 15:15:08 +0000"
+        },
+        "labels" : {
+          "app.kubernetes.io/version" : "1.0.0-SNAPSHOT",
+          "app.kubernetes.io/name" : "camel-quarkus-consumer"
+        }
+      },
+      "spec" : {
+        "containers" : [ {
+          "env" : [ {
+            "name" : "KUBERNETES_NAMESPACE",
+            "valueFrom" : {
+              "fieldRef" : {
+                "fieldPath" : "metadata.namespace"
+              }
+            }
+          }, {
+            "name" : "JAVA_APP_JAR",
+            "value" : "/deployments/quarkus-run.jar"
+          } ],
+          "image" : "jhawkins/camel-quarkus-consumer:1.0.0-SNAPSHOT",
+          "imagePullPolicy" : "Always",
+          "name" : "camel-quarkus-consumer"
+        } ]
+      }
+    }
+  }
+}]
