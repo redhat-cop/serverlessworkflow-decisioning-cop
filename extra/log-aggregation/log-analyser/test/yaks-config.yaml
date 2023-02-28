@@ -1,0 +1,18 @@
+config:
+  runtime:
+    env:
+      - name: YAKS_CAMELK_SUPPORT_VARIABLES_IN_SOURCES
+        value: false
+    resources:
+      - ../Basic.java
+      - ../Routing.java
+      - ../routing.properties
+  dump:
+    enabled: true
+    failedOnly: true
+    includes:
+      - app=camel-k
+post:
+  - name: print dump
+    if: env:CI=true && failure()
+    run: kamel dump
