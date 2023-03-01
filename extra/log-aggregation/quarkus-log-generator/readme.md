@@ -51,6 +51,12 @@ Get New Service Name: ```oc get svc```
 
 Expose Service: ```oc expose svc/[Service Name]```
 
+## How to deploy additional apps via ImageStream
+
+Get the Imagestream: ```oc get is```
+
+Deploy new app: ```oc new-app --name=[New App Name] [project]/[Image Stream Name]:[TAG]```
+
 ## Import Postman Collection
 
 You can download the latest Postman version [here](https://www.postman.com/downloads/) or you can use the web client [here](https://www.postman.com/)
