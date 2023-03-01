@@ -1,22 +1,23 @@
-Quarkus Consumer
+# Quarkus Consumer
 
 This is  a reactive messaging consumer in Quarkus using the MicroProfile Reactive Messaging API.
 
-Usage
+## Usage
 
 The QuarkusConsumer class is designed to consume messages from a messaging channel named "logs-app". The @Incoming annotation is used to indicate that the sink method should be invoked for each incoming message on this channel.
 
-Configuration
+## Configuration
 
 Configuration is located in the application.properties, where the kafka server address and topic are defined.
 
-Requirements
+## Requirements
+
 This code requires the following dependencies:
 
 org.eclipse.microprofile.reactive-messaging-api - provides the MicroProfile Reactive Messaging API used to create the consumer
 javax.enterprise.context - provides the @ApplicationScoped annotation used to manage the lifecycle of the consumer
 
-How to deploy
+## How to deploy
 
 Login to OCP:
 ```oc login --token=myToken --server=myServerUrl```

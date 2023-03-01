@@ -1,15 +1,16 @@
-Camel K Consumer
+# Camel K Consumer
 
 This is a Kafka consumer using Apache Camel to consume messages from a Kafka topic named logs-app. The consumed messages are then logged to the console.
 
-Prerequisites
+## Prerequisites
+
 To run this code, you will need the following:
 
 Apache Camel Quarkus Dependancy: camel-quarkus-kafka
 AMQ Streams Operator: Red Hat Integration - AMQ Streams
 Camel K Operator: Red Hat Integration - Camel K
 
-Usage
+## Usage
 
 Install CamelK CLI by following the instructions on the official CamelK website (https://camel.apache.org/camel-k/1.11.x/cli/cli.html). Ensure the version of Camel K used in the operator and the CLI match, the Red Hat Integration - Camel K Operator uses 1.8.2 (https://camel.apache.org/releases/k-1.8.2/) as of 02/23.
 
