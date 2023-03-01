@@ -48,7 +48,7 @@ jobs:
           repositories: '[{ "id": "redhat-ga-repository", "url": "https://maven.repository.redhat.com/ga" }]'
           plugin_repositories: '[{ "id": "redhat-ga-repository", "url": "https://maven.repository.redhat.com/ga" }]'
 
-      - name: Build coded-examples
+      - name: Build example/serverless-workflow-sample
         run: |
           pushd example/serverless-workflow-sample
           ./mvnw -B install
