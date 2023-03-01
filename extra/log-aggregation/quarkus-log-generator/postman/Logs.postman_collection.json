@@ -1,0 +1,207 @@
+{
+	"info": {
+		"_postman_id": "74d3bfc4-418d-4615-bd52-66b44ab6aeb3",
+		"name": "Logs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9363046"
+	},
+	"item": [
+		{
+			"name": "/log",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cluster}}/log",
+					"host": [
+						"{{cluster}}"
+					],
+					"path": [
+						"log"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "msgReceived",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cluster}}/log/msgReceived",
+					"host": [
+						"{{cluster}}"
+					],
+					"path": [
+						"log",
+						"msgReceived"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "msgSent",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cluster}}/log/msgSent",
+					"host": [
+						"{{cluster}}"
+					],
+					"path": [
+						"log",
+						"msgSent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "msgStored",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cluster}}/log/msgStored",
+					"host": [
+						"{{cluster}}"
+					],
+					"path": [
+						"log",
+						"msgStored"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fileSent",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cluster}}/log/fileSent",
+					"host": [
+						"{{cluster}}"
+					],
+					"path": [
+						"log",
+						"fileSent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fileReceived",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cluster}}/log/fileReceived",
+					"host": [
+						"{{cluster}}"
+					],
+					"path": [
+						"log",
+						"fileReceived"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dupError",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{cluster}}/log/dupError",
+					"host": [
+						"{{cluster}}"
+					],
+					"path": [
+						"log",
+						"dupError"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SendToLogAggregator",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://basic-log-analyser.apps.bob.sandbox1299.opentlc.com/log-aggregator",
+					"protocol": "http",
+					"host": [
+						"basic-log-analyser",
+						"apps",
+						"bob",
+						"sandbox1299",
+						"opentlc",
+						"com"
+					],
+					"path": [
+						"log-aggregator"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SendToLogAggregator-loganalyser",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://log-analyser-log-analyser.apps.bob.sandbox1299.opentlc.com/log-aggregator",
+					"protocol": "http",
+					"host": [
+						"log-analyser-log-analyser",
+						"apps",
+						"bob",
+						"sandbox1299",
+						"opentlc",
+						"com"
+					],
+					"path": [
+						"log-aggregator"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Loop",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{cluster}}/log/loop/50",
+					"host": [
+						"{{cluster}}"
+					],
+					"path": [
+						"log",
+						"loop",
+						"50"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
