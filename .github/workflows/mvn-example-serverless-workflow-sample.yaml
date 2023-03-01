@@ -50,6 +50,6 @@ jobs:
 
       - name: Build coded-examples
         run: |
-          pushd mvn-example-serverless-workflow-sample
+          pushd example/serverless-workflow-sample
           ./mvnw -B install
           popd
