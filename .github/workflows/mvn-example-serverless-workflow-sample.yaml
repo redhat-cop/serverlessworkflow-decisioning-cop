@@ -1,0 +1,55 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven for example/serverless-workflow-sample
+
+on:
+  push:
+    paths:
+      - .github/workflows/mvn-example-serverless-workflow-sample.yaml
+      - example/serverless-workflow-sample/**
+  pull_request:
+    paths:
+      - .github/workflows/mvn-example-serverless-workflow-sample.yaml
+      - example/serverless-workflow-sample/**
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Support longpaths
+        if: matrix.os == 'windows-latest'
+        run: git config --system core.longpaths true
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-mvn-example-serverless-workflow-sample-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: maven-settings-xml-action
+        uses: whelk-io/maven-settings-xml-action@v4
+        with:
+          repositories: '[{ "id": "redhat-ga-repository", "url": "https://maven.repository.redhat.com/ga" }]'
+          plugin_repositories: '[{ "id": "redhat-ga-repository", "url": "https://maven.repository.redhat.com/ga" }]'
+
+      - name: Build example/serverless-workflow-sample
+        run: |
+          pushd example/serverless-workflow-sample
+          ./mvnw -B install
+          popd
