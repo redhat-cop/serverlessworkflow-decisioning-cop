@@ -6,6 +6,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.concurrent.TimeUnit;
 
 @Path("/log")
 @Produces(MediaType.TEXT_PLAIN)
@@ -63,9 +64,10 @@ public class LogOutput {
 
     @POST
     @Path("loop/{num}")
-    public String loopTimes(int num){
+    public String loopTimes(int num) throws InterruptedException{
         for (int i = num; i > 0; i--){
             LOGGER.info("INFO 1 --- [XNIO-2 task-2] receiveMessage : Received message: D0348A.MAH003.IN3. 3099024");
+            TimeUnit.SECONDS.sleep(1);
         }
         return "INFO 1 --- [XNIO-2 task-2] receiveMessage : Received message: D0348A.MAH003.IN3. 3099024";
     }
