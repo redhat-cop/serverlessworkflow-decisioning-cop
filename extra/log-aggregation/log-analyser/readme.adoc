@@ -1,0 +1,32 @@
+== Camel K Log Analyser
+
+This is a Camel K-based log analyser which listens to both a rest
+endpoint and TCP endpoint.
+
+=== Requirements
+
+To run this code, you will need:
+
+Camel K Operator: Red Hat Integration - Camel K Camel K CLI - Install
+Camel K CLI by following the instructions on the official CamelK website
+(https://camel.apache.org/camel-k/1.11.x/cli/cli.html). Ensure the
+version of Camel K used in the operator and the CLI match, the Red Hat
+Integration - Camel K Operator uses 1.8.2
+(https://camel.apache.org/releases/k-1.8.2/) as of 02/23.
+
+=== Usage
+
+This code sets up a REST endpoint at /log-aggregator that accepts POST
+requests. The message body of the request will be logged using Camel’s
+logging feature. Additionally, this code sets up a Netty TCP endpoint at
+0.0.0.0:8008 that will log any incoming messages.
+
+=== How to Deploy
+
+Login to OCP: `+oc login --token=myToken --server=myServerUrl+`
+
+Deploy using Camel K CLI: `+kamel run LogAnalyser.java+`
+
+Once deployed, you can send a POST request to the /log-aggregator
+endpoint with a message body to see the message logged. You can also
+send a message to the Netty TCP endpoint to see the message logged.
