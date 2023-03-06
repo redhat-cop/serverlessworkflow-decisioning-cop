@@ -1,0 +1,36 @@
+== Openshift Configuration
+
+Contained in this directory is various yaml files which can be applied
+to an Openshift cluster which contain configuration data.
+
+=== Usage
+
+Login to OCP: `+oc login --token=myToken --server=myServerUrl+`
+
+Navigate to or Create Namespace to apply Configuration to: - Navigate:
+`+oc project [namespace]+` - Create: `+oc new-project [namespace]+`
+
+Apply Configuration: `+oc apply -f [filename].yaml+`
+
+=== Fluentd
+
+The Fluentd configuration file contains connections to both the kafka
+instance and the log-analyser application.
+
+The urls for these connections should point to their corresponding local
+hostnames, which can be found on the Openshift Console within the
+service.
+
+=== Vector
+
+See Fluentd section for configuring Vector, the process is identical.
+
+=== Configuration Files
+
+* log-analyser.yaml - Log Analyser Configuration for log analyser
+namespace
+* openshift-logging - Fluentd Configuration for the openshift-logging
+namespace
+* template.yaml - Log Analyser port 8008 Configuration for log analyser
+namespace
+* filter.yaml - Regex filter configuration for Fluentd
