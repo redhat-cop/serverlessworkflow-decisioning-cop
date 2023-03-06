@@ -1,0 +1,42 @@
+== Camel K Consumer
+
+This is a Kafka consumer using Apache Camel to consume messages from a
+Kafka topic named logs-app. The consumed messages are then logged to the
+console.
+
+=== Prerequisites
+
+To run this code, you will need the following:
+
+Apache Camel Quarkus Dependancy: camel-quarkus-kafka AMQ Streams
+Operator: Red Hat Integration - AMQ Streams Camel K Operator: Red Hat
+Integration - Camel K
+
+=== Usage
+
+Install CamelK CLI by following the instructions on the official CamelK
+website (https://camel.apache.org/camel-k/1.11.x/cli/cli.html). Ensure
+the version of Camel K used in the operator and the CLI match, the Red
+Hat Integration - Camel K Operator uses 1.8.2
+(https://camel.apache.org/releases/k-1.8.2/) as of 02/23.
+
+Create a new file named CamelKConsumer.java and copy the code into it.
+
+Save the file and exit your text editor.
+
+Open a terminal window and navigate to the directory where you saved
+CamelKConsumer.java.
+
+Run the following command to create a new CamelK integration using the
+code in CamelKConsumer.java:
+
+`+kamel run CamelKConsumer.java+`
+
+Wait for CamelK to deploy the integration and start consuming messages
+from the Kafka topic.
+
+Configuration The following configuration options are available:
+
+Kafka bootstrap server (Kafka Service Address):
+tcp://kafka-cluster-kafka-bootstrap.kafka-log.svc.cluster.local:9092
+Kafka topic: logs-app
