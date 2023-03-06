@@ -75,38 +75,38 @@ https://www.postman.com/[here]
 
 Click on the Import button in the top left corner of the app window.
 
-image::images/PostmanImport.png[Postman Import]
+image::../images/PostmanImport.png[Postman Import]
 
 In the new window, click on the File tab.
 
-image::images/PostmanFilesTab.png[Postman Files Tab]
+image::../images/PostmanFilesTab.png[Postman Files Tab]
 
 Click on the Choose files option.
 
-image::images/PostmanChooseFiles.png[Postman Choose Files]
+image::../images/PostmanChooseFiles.png[Postman Choose Files]
 
 Select the postman/Logs.postman_collection.json file
 
-image::images/PostmanOpenFile.png[Postman Open File]
+image::../images/PostmanOpenFile.png[Postman Open File]
 
 Ensure Logs is selected and click Import.
 
-image::images/PostmanImportFinal.png[Postman Import]
+image::../images/PostmanImportFinal.png[Postman Import]
 
 === Using Postman Collection
 
 Create a new environment with a variable named `+cluster+`
 
-image::images/PostmanCreateEnv.png[Postman Create Environment]
+image::../images/PostmanCreateEnv.png[Postman Create Environment]
 
 Set `+cluster+` equal to your cluster address
 
-image::images/PostmanClusterEnv.png[Postman Cluster Variable]
+image::../images/PostmanClusterEnv.png[Postman Cluster Variable]
 
 Select the new environment in the top right dropdown menu
 
-image::images/PostmanEnvSelect.png[Postman Environment Select]
+image::../images/PostmanEnvSelect.png[Postman Environment Select]
 
 Choose a request to execute within the Logs collection and click Send
 
-image::images/PostmanSend.png[Postman Send]
+image::../images/PostmanSend.png[Postman Send]
