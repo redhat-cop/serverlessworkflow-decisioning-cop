@@ -1,0 +1,31 @@
+== Camel Quarkus Consumer
+
+This code defines a Camel Quarkus consumer application that listens to a
+Kafka topic named "`logs-app`" and logs the message received from it.
+
+=== Prerequisites
+
+Before running this application, you need to have the following:
+
+Java Development Kit (JDK) 11 or higher installed Quarkus CLI which can
+be installed by following instructions on the Quarkus website
+(https://quarkus.io/get-started/). A Kafka broker set up accessible at
+tcp://kafka-cluster-kafka-bootstrap.kafka-log.svc.cluster.local:9092
+
+=== How to use
+
+To use this code, simply compile it and run it in your local environment
+or on a server.
+
+Make sure to configure the Kafka broker URL to match your environment by
+modifying the from method in the configure method of the
+CamelQuarkusConsumer class.
+
+=== How to deploy
+
+Login to OCP: `+oc login --token=myToken --server=myServerUrl+`
+
+Run a Quarkus Build:
+`+quarkus build -Dquarkus.kubernetes-client.master-url=myServerUrl -Dquarkus.kubernetes-client.token=myToken+`
+
+Deploy to OCP: `+quarkus build -Dquarkus.kubernetes.deploy=true+`
